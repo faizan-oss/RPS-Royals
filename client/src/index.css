@@ -1,0 +1,10 @@
+@import "tailwindcss";
+.app-background {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #1f1c2c, #2c3e50, #000000);
+  color: white;
+}
