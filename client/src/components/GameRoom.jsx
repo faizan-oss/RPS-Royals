@@ -163,39 +163,36 @@ function GameRoom() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row items-center justify-center gap-10 px-6 py-10 bg-gradient-to-br from-[#1f1c2c] via-[#2c3e50] to-[#000000] text-white">
+    <div className="min-h-screen flex flex-col md:flex-row items-center justify-center gap-4 md:gap-10 px-2 md:px-6 py-4 md:py-10 bg-gradient-to-br from-[#1f1c2c] via-[#2c3e50] to-[#000000] text-white relative">
       {/* Game area */}
-      <div className="md:flex-1 flex justify-center">
+      <div className="w-full flex justify-center mb-4 md:mb-0 md:flex-1">
         <img
           src={room?.result ? getHandImage(room?.player1?.move, "left") : getHandImage("stone", "left")}
           alt="Left Hand"
-          className={`hand-img object-contain ${room?.result ? "animate-shake" : "animate-pulse"}`}
+          className="hand-img object-contain animate-pulse"
         />
       </div>
-      <div className="md:flex-1 flex flex-col items-center">
-        <h2 className="text-3xl md:text-4xl font-bold text-indigo-400 mb-6 text-center" style={{ fontFamily: "Orbitron, sans-serif" }}>
+      <div className="w-full md:flex-1 flex flex-col items-center">
+        <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-indigo-400 mb-4 md:mb-6 text-center" style={{ fontFamily: "Orbitron, sans-serif" }}>
           🕹️ Game Room: {roomId}
         </h2>
-
-        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-2xl p-8 w-full max-w-sm text-white text-center">
-          <div className="mb-4 text-lg font-semibold text-indigo-200" style={{ fontFamily: "Orbitron, sans-serif" }}>
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-2xl p-4 sm:p-6 md:p-8 w-full max-w-xs sm:max-w-sm text-white text-center">
+          <div className="mb-3 sm:mb-4 text-base sm:text-lg font-semibold text-indigo-200" style={{ fontFamily: "Orbitron, sans-serif" }}>
             {room?.player1?.name} ({room?.score1 || 0}) vs ({room?.score2 || 0}) {room?.player2?.name}
           </div>
-
           {renderWinner()}
-
           {/* Always show move buttons unless the game is over */}
           {!room?.winner && (
             <>
-              <h3 className="text-md text-gray-100 mb-3" style={{ fontFamily: "Orbitron, sans-serif" }}>Make your move:</h3>
-              <div className="grid grid-cols-3 gap-4 mb-4">
-                {["stone", "paper", "scissor"].map((move) => (
+              <h3 className="text-xs sm:text-md text-gray-100 mb-2 sm:mb-3" style={{ fontFamily: "Orbitron, sans-serif" }}>Make your move:</h3>
+              <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-3 sm:mb-4">
+                {['stone', 'paper', 'scissor'].map((move) => (
                   <button
                     key={move}
                     onClick={() => handleMove(move)}
-                    className="bg-indigo-100 text-indigo-700 font-semibold py-2 rounded hover:bg-indigo-200 transition"
+                    className="bg-indigo-100 text-indigo-700 font-semibold py-1.5 sm:py-2 rounded hover:bg-indigo-200 transition text-xs sm:text-base"
                     style={{ fontFamily: "Orbitron, sans-serif" }}
-                    disabled={currentPlayer?.move} // Disable if this player has already moved
+                    disabled={currentPlayer?.move}
                   >
                     {move.toUpperCase()}
                   </button>
@@ -203,10 +200,9 @@ function GameRoom() {
               </div>
             </>
           )}
-
           {/* Show the result below the buttons when available */}
           {room?.result && (
-            <div className="text-xl font-semibold text-indigo-300 mt-2" style={{ fontFamily: "Orbitron, sans-serif" }}>
+            <div className="text-base sm:text-xl font-semibold text-indigo-300 mt-1 sm:mt-2" style={{ fontFamily: "Orbitron, sans-serif" }}>
               {renderResult()}
             </div>
           )}
@@ -214,38 +210,36 @@ function GameRoom() {
           {showNextRound && !room?.winner && (
             <button
               onClick={handleReset}
-              className="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+              className="mt-2 sm:mt-4 bg-green-500 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded hover:bg-green-600 transition text-xs sm:text-base"
               style={{ fontFamily: "Orbitron, sans-serif" }}
             >
               ➡️ Next Round
             </button>
           )}
-
           {room?.winner && (
-            <div className="mt-6 space-x-4">
-              <button onClick={handleReset} className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition" style={{ fontFamily: "Orbitron, sans-serif" }}>
+            <div className="mt-4 sm:mt-6 space-x-2 sm:space-x-4 flex flex-col sm:flex-row items-center justify-center">
+              <button onClick={handleReset} className="bg-indigo-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded hover:bg-indigo-700 transition text-xs sm:text-base" style={{ fontFamily: "Orbitron, sans-serif" }}>
                 🔁 Play Again
               </button>
-              <button onClick={handleBack} className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition" style={{ fontFamily: "Orbitron, sans-serif" }}>
+              <button onClick={handleBack} className="bg-gray-300 text-gray-800 px-3 sm:px-4 py-1.5 sm:py-2 rounded hover:bg-gray-400 transition text-xs sm:text-base" style={{ fontFamily: "Orbitron, sans-serif" }}>
                 ⬅️ Back to Home
               </button>
             </div>
           )}
         </div>
       </div>
-
-      <div className="md:flex-1 flex justify-center">
+      <div className="w-full flex justify-center mt-4 md:mt-0 md:flex-1">
         <img
           src={room?.result ? getHandImage(room?.player2?.move, "right") : getHandImage("stone", "right")}
           alt="Right Hand"
-          className={`hand-img object-contain ${room?.result ? "animate-shake" : "animate-pulse"}`}
+          className="hand-img object-contain animate-pulse"
         />
       </div>
       {/* Chat Section */}
-      <div className="fixed bottom-0 left-0 w-full md:w-1/2 md:left-1/4 z-50 p-2">
-        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-2xl p-3 max-h-40 overflow-y-auto mb-2" style={{ fontFamily: "Orbitron, sans-serif" }}>
-          <div className="text-indigo-300 font-bold mb-1 text-sm">💬 Chat</div>
-          <div className="space-y-1 max-h-24 overflow-y-auto" style={{ minHeight: 40 }}>
+      <div className="w-full md:w-1/2 fixed md:absolute bottom-0 left-0 md:left-1/4 z-50 p-1 sm:p-2">
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-2xl p-2 sm:p-3 max-h-32 sm:max-h-40 overflow-y-auto mb-1 sm:mb-2" style={{ fontFamily: "Orbitron, sans-serif" }}>
+          <div className="text-indigo-300 font-bold mb-1 text-xs sm:text-sm">💬 Chat</div>
+          <div className="space-y-1 max-h-16 sm:max-h-24 overflow-y-auto" style={{ minHeight: 32 }}>
             {messages.length === 0 && <div className="text-gray-400 text-xs">No messages yet.</div>}
             {messages.map((msg, idx) => (
               <div key={idx} className={`text-xs ${msg.playerName === playerName ? "text-green-300" : "text-indigo-200"}`}>
@@ -263,12 +257,12 @@ function GameRoom() {
             onChange={e => setChatInput(e.target.value)}
             onKeyDown={e => e.key === "Enter" && sendMessage()}
             placeholder="Type a message..."
-            className="flex-1 px-2 py-1 rounded-l bg-white/20 text-white border border-white/30 focus:outline-none focus:ring-2 focus:ring-indigo-400 placeholder-white/70 text-sm"
+            className="flex-1 px-2 py-1 rounded-l bg-white/20 text-white border border-white/30 focus:outline-none focus:ring-2 focus:ring-indigo-400 placeholder-white/70 text-xs sm:text-sm"
             style={{ fontFamily: "Orbitron, sans-serif" }}
           />
           <button
             onClick={sendMessage}
-            className="bg-indigo-600 text-white px-3 py-1 rounded-r hover:bg-indigo-700 transition font-semibold text-sm"
+            className="bg-indigo-600 text-white px-2 sm:px-3 py-1 rounded-r hover:bg-indigo-700 transition font-semibold text-xs sm:text-sm"
             style={{ fontFamily: "Orbitron, sans-serif" }}
           >
             Send
