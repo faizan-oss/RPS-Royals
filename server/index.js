@@ -43,6 +43,11 @@ io.on("connection", (socket) => {
     console.log(`✅ ${socket.id} joined room ${roomId}`);
   });
 
+  // Chat message handler
+  socket.on("chatMessage", ({ roomId, playerName, message }) => {
+    io.to(roomId).emit("chatMessage", { playerName, message, timestamp: Date.now() });
+  });
+
   socket.on("leaveRoom", (roomId) => {
     socket.leave(roomId);
     console.log(`🚪 ${socket.id} left room ${roomId}`);
