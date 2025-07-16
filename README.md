@@ -1,4 +1,8 @@
 # 🏆 RPS Royals - Multiplayer Rock Paper Scissors Game
+# 🚀 Live Demo
+
+- 🎮 Play the game: [RPS Royals on Vercel](https://rps-royals.vercel.app/)
+- 🌐 Backend API: [Render API Endpoint](https://rps-royals.onrender.com)
 
 **RPS Royals** is a real-time, multiplayer rock-paper-scissors game built with **React**, **Node.js**, **Socket.IO**, and **MongoDB**. Two players can join a room and compete in a best-of-5 match — all live and synchronized across both browsers!
 
@@ -11,7 +15,21 @@
 - 🔴 Real-time gameplay using **Socket.IO**
 - 🛢 MongoDB stores match info and player details
 - 🌐 Easily deployable to Vercel (frontend) and Render (backend)
+- ### 💬 Live Chat (New!)
+# 🔴 Live Features
+- Players inside a room can now **chat in real-time**.
 
+This game is powered by **Socket.IO** to enable real-time multiplayer gameplay and communication.
+
+### 🧩 Real-Time Multiplayer
+- Players can **create** or **join a room** using a unique Room ID.
+- The game state (moves, scores, rounds) is **synced instantly** between both players.
+
+### 💬 Live Chat (New!)
+- Players inside a room can now **chat in real-time**.
+- Messages are visible **only to the current room participants**.
+- Built using **Socket.IO**, ensuring instant communication.
+- Helps improve **player engagement and coordination** during the match.
 ## 🕹️ How to Play the Game
 
 1. One player clicks **"Create Room"** and enters their name.
