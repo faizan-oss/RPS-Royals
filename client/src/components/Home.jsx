@@ -7,9 +7,11 @@ function Home() {
   const [roomId, setRoomId] = useState("");
   const navigate = useNavigate();
 
+  const API = import.meta.env.VITE_BACKEND_URL;
+
  const handleCreateRoom = async () => {
   try {
-    const res = await axios.post("http://localhost:5001/api/room/create", {
+    const res = await axios.post(`${API}api/room/create`, {
       playerName,
     });
 
@@ -25,7 +27,7 @@ function Home() {
 
 const handleJoinRoom = async () => {
   try {
-    await axios.post("http://localhost:5001/api/room/join", {
+    await axios.post(`${API}api/room/join`, {
       roomId,
       playerName,
     });

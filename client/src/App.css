@@ -1,0 +1,41 @@
+/* Hand image sizing for all hand types */
+.hand-img {
+  width: 12rem; /* same as w-48 */
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .hand-img {
+    width: 12rem; /* md:w-48 */
+  }
+}
+@media (min-width: 1024px) {
+  .hand-img {
+    width: 25rem; /* lg:w-100 (custom) */
+  }
+}
+
+/* Pulse effect for all hand images */
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.08); }
+}
+.animate-pulse {
+  animation: pulse 1.2s infinite;
+}
+
+/* Shake effect for all hand images */
+@keyframes shake {
+  0% { transform: rotate(0deg); }
+  20% { transform: rotate(-10deg); }
+  40% { transform: rotate(10deg); }
+  60% { transform: rotate(-10deg); }
+  80% { transform: rotate(10deg); }
+  100% { transform: rotate(0deg); }
+}
+.animate-shake {
+  animation: shake 0.5s;
+}

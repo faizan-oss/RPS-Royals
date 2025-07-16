@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:5001");
+const socket = io(import.meta.env.VITE_BACKEND_URL);
+const API = import.meta.env.VITE_BACKEND_URL;
 
 function GameRoom() {
   const { roomId } = useParams();
@@ -12,11 +13,14 @@ function GameRoom() {
   const [showNextRound, setShowNextRound] = useState(false);
   const playerName = localStorage.getItem("playerName");
   const navigate = useNavigate();
+  const [messages, setMessages] = useState([]);
+  const [chatInput, setChatInput] = useState("");
+  const chatEndRef = useRef(null);
 
   useEffect(() => {
     const fetchRoom = async () => {
       try {
-        const res = await axios.get(`http://localhost:5001/api/room/${roomId}`);
+        const res = await axios.get(`${API}api/room/${roomId}`);
         setRoom(res.data.room);
 
         const currentPlayer =
@@ -63,7 +67,7 @@ function GameRoom() {
       if (updatedRoom.result && !updatedRoom.winner) {
         setTimeout(async () => {
           try {
-            await axios.post(`http://localhost:5001/api/room/${roomId}/reset`);
+            await axios.post(`${API}api/room/${roomId}/reset`);
             // we don't reset submitted to false until the next move
           } catch (err) {
             console.error("Auto-reset failed:", err);
@@ -72,16 +76,27 @@ function GameRoom() {
       }
     });
 
+    socket.on("chatMessage", (msg) => {
+      setMessages((prev) => [...prev, msg]);
+    });
+
     return () => {
       socket.off("roomUpdated");
+      socket.off("chatMessage");
       socket.emit("leaveRoom", roomId);
     };
   }, [roomId, navigate, playerName]);
 
+  useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
   const handleMove = async (move) => {
     try {
       console.log(`[FRONTEND] Submitting move:`, { playerName, move });
-      await axios.post(`http://localhost:5001/api/room/${roomId}/move`, {
+      await axios.post(`${API}api/room/${roomId}/move`, {
         playerName,
         move,
       });
@@ -94,7 +109,7 @@ function GameRoom() {
   const handleReset = async () => {
     try {
       console.log(`[FRONTEND] Next round requested by:`, playerName);
-      await axios.post(`http://localhost:5001/api/room/${roomId}/reset`);
+      await axios.post(`${API}api/room/${roomId}/reset`);
       setShowNextRound(false);
       // setSubmitted(false); // No longer needed
     } catch (err) {
@@ -126,12 +141,37 @@ function GameRoom() {
 
   const currentPlayer = room?.player1.name === playerName ? room?.player1 : room?.player2;
 
+  // Map move and side to image path
+  function getHandImage(move, side) {
+    if (move === "stone" || move === null) {
+      return side === "left" ? "/images/fist-left.png" : "/images/fist-right.png";
+    }
+    if (move === "paper") {
+      return side === "left" ? "/images/left-paper.png.png" : "/images/right-paper.png.png";
+    }
+    if (move === "scissor") {
+      return side === "left" ? "/images/left-scissors.png.png" : "/images/right-scissors.png.png";
+    }
+    return side === "left" ? "/images/fist-left.png" : "/images/fist-right.png";
+  }
+
+  const sendMessage = () => {
+    if (chatInput.trim()) {
+      socket.emit("chatMessage", { roomId, playerName, message: chatInput });
+      setChatInput("");
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col md:flex-row items-center justify-center gap-10 px-6 py-10 bg-gradient-to-br from-[#1f1c2c] via-[#2c3e50] to-[#000000] text-white">
+      {/* Game area */}
       <div className="md:flex-1 flex justify-center">
-        <img src="/images/fist-left.png" alt="Left Fist" className="w-32 md:w-48 lg:w-100 object-contain animate-pulse" />
+        <img
+          src={room?.result ? getHandImage(room?.player1?.move, "left") : getHandImage("stone", "left")}
+          alt="Left Hand"
+          className={`hand-img object-contain ${room?.result ? "animate-shake" : "animate-pulse"}`}
+        />
       </div>
-
       <div className="md:flex-1 flex flex-col items-center">
         <h2 className="text-3xl md:text-4xl font-bold text-indigo-400 mb-6 text-center" style={{ fontFamily: "Orbitron, sans-serif" }}>
           🕹️ Game Room: {roomId}
@@ -195,7 +235,45 @@ function GameRoom() {
       </div>
 
       <div className="md:flex-1 flex justify-center">
-        <img src="/images/fist-right.png" alt="Right Fist" className="w-32 md:w-48 lg:w-100 object-contain animate-pulse" />
+        <img
+          src={room?.result ? getHandImage(room?.player2?.move, "right") : getHandImage("stone", "right")}
+          alt="Right Hand"
+          className={`hand-img object-contain ${room?.result ? "animate-shake" : "animate-pulse"}`}
+        />
+      </div>
+      {/* Chat Section */}
+      <div className="fixed bottom-0 left-0 w-full md:w-1/2 md:left-1/4 z-50 p-2">
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-2xl p-3 max-h-40 overflow-y-auto mb-2" style={{ fontFamily: "Orbitron, sans-serif" }}>
+          <div className="text-indigo-300 font-bold mb-1 text-sm">💬 Chat</div>
+          <div className="space-y-1 max-h-24 overflow-y-auto" style={{ minHeight: 40 }}>
+            {messages.length === 0 && <div className="text-gray-400 text-xs">No messages yet.</div>}
+            {messages.map((msg, idx) => (
+              <div key={idx} className={`text-xs ${msg.playerName === playerName ? "text-green-300" : "text-indigo-200"}`}>
+                <span className="font-semibold">{msg.playerName}:</span> {msg.message}
+                <span className="ml-1 text-xs text-gray-400">{msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString() : ""}</span>
+              </div>
+            ))}
+            <div ref={chatEndRef} />
+          </div>
+        </div>
+        <div className="flex gap-1">
+          <input
+            type="text"
+            value={chatInput}
+            onChange={e => setChatInput(e.target.value)}
+            onKeyDown={e => e.key === "Enter" && sendMessage()}
+            placeholder="Type a message..."
+            className="flex-1 px-2 py-1 rounded-l bg-white/20 text-white border border-white/30 focus:outline-none focus:ring-2 focus:ring-indigo-400 placeholder-white/70 text-sm"
+            style={{ fontFamily: "Orbitron, sans-serif" }}
+          />
+          <button
+            onClick={sendMessage}
+            className="bg-indigo-600 text-white px-3 py-1 rounded-r hover:bg-indigo-700 transition font-semibold text-sm"
+            style={{ fontFamily: "Orbitron, sans-serif" }}
+          >
+            Send
+          </button>
+        </div>
       </div>
     </div>
   );
